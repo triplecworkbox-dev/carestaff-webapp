@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareStaff - Access Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .file-upload-group {
+            margin-bottom: 20px;
+        }
+
+        .file-upload-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .file-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .file-upload-btn:hover {
+            border-color: #3498db;
+            background: #e8f4f8;
+        }
+
+        .file-upload-btn.has-file {
+            border-style: solid;
+            border-color: #27ae60;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .file-name {
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 2px solid #e74c3c;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #27ae60;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+
+        .toggle-link {
+            text-align: center;
+            margin-top: 15px;
+            color: #3498db;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+        }
+
+        .toggle-link:hover {
+            color: #2c3e50;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .help-text {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CareStaff</h1>
+            <p id="headerSubtitle">Healthcare Professional Portal</p>
+        </div>
+
+        <div class="form-content">
+            <!-- Login Form -->
+            <div id="loginSection">
+                <div class="info-box">
+                    <strong>Welcome Back</strong><br>
+                    Login to access your CareStaff account and view available opportunities.
+                </div>
+
+                <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                    <strong>🔐 Demo Test Credentials</strong><br>
+                    <small style="display: block; margin-top: 8px;">
+                        <strong>Doctor:</strong> doctor@carestaff.com / password123<br>
+                        <strong>Nurse:</strong> nurse@carestaff.com / password123<br>
+                        <strong>Pharmacist:</strong> pharmacist@carestaff.com / password123<br>
+                        <strong>Facility:</strong> facility@carestaff.com / password123
+                    </small>
+                </div>
+
+                <div class="error-message" id="loginError"></div>
+
+                <!-- Account Type dropdown hidden - no longer needed -->
+                <!-- <div class="form-group">
+                    <label>Account Type <span class="required">*</span></label>
+                    <select id="loginUserType" required>
+                        <option value="">Select Account Type</option>
+                        <option value="doctor">Healthcare Professional (Doctor)</option>
+                        <option value="nurse">Healthcare Professional (Nurse)</option>
+                        <option value="pharmacist">Healthcare Professional (Pharmacist)</option>
+                        <option value="facility">Healthcare Facility/Pharmacy</option>
+                    </select>
+                </div> -->
+                <input type="hidden" id="loginUserType" value="">
+
+                <div class="form-group">
+                    <label>Email Address <span class="required">*</span></label>
+                    <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Password <span class="required">*</span></label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+
+                <button type="button" class="btn-primary" id="loginBtn">Login</button>
+                
+                <div class="toggle-link" id="showRegister">
+                    Don't have an account? Register here
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <div id="registrationSection" class="hidden">
+                <div class="info-box">
+                    <strong>Join Our Network</strong><br>
+                    Register to receive locum opportunities or find healthcare professionals. All registrations are verified before activation.
+                </div>
+
+                <div class="error-message" id="registerError"></div>
+
+                <form id="registrationForm">
+                    <!-- User Type Selection -->
+                    <div class="form-group">
+                        <label>I am registering as <span class="required">*</span></label>
+                        <select id="userType" required>
+                            <option value="">Select User Type</option>
+                            <option value="doctor">Healthcare Professional (Doctor)</option>
+                            <option value="nurse">Healthcare Professional (Nurse)</option>
+                            <option value="pharmacist">Healthcare Professional (Pharmacist)</option>
+                            <option value="facility">Healthcare Facility/Pharmacy</option>
+                        </select>
+                    </div>
+
+                    <!-- Common Fields for All Users -->
+                    <div id="commonFields" class="hidden">
+                        <div class="form-group">
+                            <label id="nameLabel">Full Name <span class="required">*</span></label>
+                            <input type="text" id="fullName" placeholder="Enter full name" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address <span class="required">*</span></label>
+                                <input type="email" id="email" placeholder="email@example.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mobile Number <span class="required">*</span></label>
+                                <input type="tel" id="mobile" placeholder="+27 82 123 4567" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Password <span class="required">*</span></label>
+                                <input type="password" id="password" placeholder="Create password" required>
+                                <small class="help-text">Minimum 8 characters</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Confirm Password <span class="required">*</span></label>
+                                <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Doctor-specific Fields -->
+                    <div id="doctorFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>HPCSA Registration <span class="required">*</span></label>
+                                <input type="text" id="hpcsaNumber" placeholder="MP123456">
+                                <small class="help-text">Format: MP123456</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Years of Experience <span class="required">*</span></label>
+                                <select id="doctorExperience">
+                                    <option value="">Select</option>
+                                    <option value="0-1">0-1 years</option>
+                                    <option value="2-3">2-3 years</option>
+                                    <option value="4-5">4-5 years</option>
+                                    <option value="6-10">6-10 years</option>
+                                    <option value="10+">10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Primary Specialty <span class="required">*</span></label>
+                            <select id="specialty">
+                                <option value="">Select Specialty</option>
+                                <option value="General Practitioner">General Practitioner</option>
+                                <option value="Emergency Medicine">Emergency Medicine</option>
+                                <option value="Internal Medicine">Internal Medicine</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Surgery">Surgery</option>
+                                <option value="Anesthesiology">Anesthesiology</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Current Availability <span class="required">*</span></label>
+                            <select id="availability">
+                                <option value="">Select Availability</option>
+                                <option value="Available Immediately">Available Immediately</option>
+                                <option value="Available This Week">Available This Week</option>
+                                <option value="Available Next Week">Available Next Week</option>
+                                <option value="Available This Month">Available This Month</option>
+                                <option value="Not Currently Available">Not Currently Available</option>
+                            </select>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload HPCSA Council Membership <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="doctorCouncilDoc" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="doctorCouncilDoc" class="file-upload-btn" id="doctorCouncilBtn">
+                                    📄 Choose File
+                                    <span class="file-name" id="doctorCouncilName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">PDF, JPG, or PNG (Max 5MB)</small>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload Profile Picture <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="doctorProfilePic" class="file-upload-input" accept=".jpg,.jpeg,.png">
+                                <label for="doctorProfilePic" class="file-upload-btn" id="doctorProfileBtn">
+                                    📷 Choose Image
+                                    <span class="file-name" id="doctorProfileName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">JPG or PNG (Max 2MB)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Regions (Optional)</label>
+                            <textarea id="doctorRegions" rows="2" placeholder="e.g., Gauteng, Western Cape, KwaZulu-Natal"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Nurse-specific Fields -->
+                    <div id="nurseFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>SANC Registration <span class="required">*</span></label>
+                                <input type="text" id="sancNumber" placeholder="SANC123456">
+                                <small class="help-text">Your SANC registration number</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Years of Experience <span class="required">*</span></label>
+                                <select id="nurseExperience">
+                                    <option value="">Select</option>
+                                    <option value="0-1">0-1 years</option>
+                                    <option value="2-3">2-3 years</option>
+                                    <option value="4-5">4-5 years</option>
+                                    <option value="6-10">6-10 years</option>
+                                    <option value="10+">10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Nursing Category <span class="required">*</span></label>
+                            <select id="nursingCategory">
+                                <option value="">Select Category</option>
+                                <option value="Professional Nurse">Professional Nurse</option>
+                                <option value="Staff Nurse">Staff Nurse</option>
+                                <option value="Enrolled Nurse">Enrolled Nurse</option>
+                                <option value="Enrolled Nursing Assistant">Enrolled Nursing Assistant</option>
+                                <option value="Midwife">Midwife</option>
+                                <option value="Specialty Nurse">Specialty Nurse</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Current Availability <span class="required">*</span></label>
+                            <select id="nurseAvailability">
+                                <option value="">Select Availability</option>
+                                <option value="Available Immediately">Available Immediately</option>
+                                <option value="Available This Week">Available This Week</option>
+                                <option value="Available Next Week">Available Next Week</option>
+                                <option value="Available This Month">Available This Month</option>
+                                <option value="Not Currently Available">Not Currently Available</option>
+                            </select>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload SANC Council Membership <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="nurseCouncilDoc" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="nurseCouncilDoc" class="file-upload-btn" id="nurseCouncilBtn">
+                                    📄 Choose File
+                                    <span class="file-name" id="nurseCouncilName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">PDF, JPG, or PNG (Max 5MB)</small>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload Profile Picture <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="nurseProfilePic" class="file-upload-input" accept=".jpg,.jpeg,.png">
+                                <label for="nurseProfilePic" class="file-upload-btn" id="nurseProfileBtn">
+                                    📷 Choose Image
+                                    <span class="file-name" id="nurseProfileName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">JPG or PNG (Max 2MB)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Regions (Optional)</label>
+                            <textarea id="nurseRegions" rows="2" placeholder="e.g., Gauteng, Western Cape, KwaZulu-Natal"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Pharmacist-specific Fields -->
+                    <div id="pharmacistFields" class="hidden">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>SAPC Registration <span class="required">*</span></label>
+                                <input type="text" id="sapcNumber" placeholder="Enter SAPC number">
+                                <small class="help-text">Your SAPC registration number</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Years of Experience <span class="required">*</span></label>
+                                <select id="pharmacistExperience">
+                                    <option value="">Select</option>
+                                    <option value="0-1">0-1 years</option>
+                                    <option value="2-3">2-3 years</option>
+                                    <option value="4-5">4-5 years</option>
+                                    <option value="6-10">6-10 years</option>
+                                    <option value="10+">10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pharmacy Category <span class="required">*</span></label>
+                            <select id="pharmacyCategory">
+                                <option value="">Select Category</option>
+                                <option value="Pharmacist">Pharmacist</option>
+                                <option value="Pharmacist Intern">Pharmacist Intern</option>
+                                <option value="Pharmacist Assistant">Pharmacist Assistant (Basic)</option>
+                                <option value="Pharmacist Assistant Post-Basic">Pharmacist Assistant (Post-Basic)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Current Availability <span class="required">*</span></label>
+                            <select id="pharmacistAvailability">
+                                <option value="">Select Availability</option>
+                                <option value="Available Immediately">Available Immediately</option>
+                                <option value="Available This Week">Available This Week</option>
+                                <option value="Available Next Week">Available Next Week</option>
+                                <option value="Available This Month">Available This Month</option>
+                                <option value="Not Currently Available">Not Currently Available</option>
+                            </select>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload SAPC Council Membership <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="pharmacistCouncilDoc" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="pharmacistCouncilDoc" class="file-upload-btn" id="pharmacistCouncilBtn">
+                                    📄 Choose File
+                                    <span class="file-name" id="pharmacistCouncilName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">PDF, JPG, or PNG (Max 5MB)</small>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload Profile Picture <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="pharmacistProfilePic" class="file-upload-input" accept=".jpg,.jpeg,.png">
+                                <label for="pharmacistProfilePic" class="file-upload-btn" id="pharmacistProfileBtn">
+                                    📷 Choose Image
+                                    <span class="file-name" id="pharmacistProfileName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">JPG or PNG (Max 2MB)</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Preferred Regions (Optional)</label>
+                            <textarea id="pharmacistRegions" rows="2" placeholder="e.g., Gauteng, Western Cape, KwaZulu-Natal"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Facility-specific Fields -->
+                    <div id="facilityFields" class="hidden">
+                        <div class="form-group">
+                            <label>Facility Type <span class="required">*</span></label>
+                            <select id="facilityType">
+                                <option value="">Select Facility Type</option>
+                                <option value="Private Hospital">Private Hospital</option>
+                                <option value="Private Clinic">Private Clinic</option>
+                                <option value="Day Clinic">Day Clinic</option>
+                                <option value="Community Pharmacy">Community Pharmacy</option>
+                                <option value="Hospital Pharmacy">Hospital Pharmacy</option>
+                                <option value="Medical Practice">Medical Practice</option>
+                                <option value="Nursing Home">Nursing Home</option>
+                                <option value="Other">Other Healthcare Facility</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Business Registration <span class="required">*</span></label>
+                                <input type="text" id="businessReg" placeholder="Company Reg Number">
+                                <small class="help-text">Company registration number</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Facility License <span class="required">*</span></label>
+                                <input type="text" id="facilityLicense" placeholder="Facility license number">
+                                <small class="help-text">Provincial DoH license or PCNS</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Physical Address <span class="required">*</span></label>
+                            <textarea id="facilityAddress" rows="2" placeholder="Street address, suburb, city, postal code"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Province <span class="required">*</span></label>
+                                <select id="facilityProvince">
+                                    <option value="">Select Province</option>
+                                    <option value="Eastern Cape">Eastern Cape</option>
+                                    <option value="Free State">Free State</option>
+                                    <option value="Gauteng">Gauteng</option>
+                                    <option value="KwaZulu-Natal">KwaZulu-Natal</option>
+                                    <option value="Limpopo">Limpopo</option>
+                                    <option value="Mpumalanga">Mpumalanga</option>
+                                    <option value="Northern Cape">Northern Cape</option>
+                                    <option value="North West">North West</option>
+                                    <option value="Western Cape">Western Cape</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Number of Beds/Size</label>
+                                <input type="text" id="facilitySize" placeholder="e.g., 50 beds or Small/Medium/Large">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Contact Person Name <span class="required">*</span></label>
+                            <input type="text" id="contactPerson" placeholder="Name of primary contact">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Contact Person Position <span class="required">*</span></label>
+                            <input type="text" id="contactPosition" placeholder="e.g., Practice Manager, Owner">
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload Business Registration Document <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="facilityBusinessDoc" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="facilityBusinessDoc" class="file-upload-btn" id="facilityBusinessBtn">
+                                    📄 Choose File
+                                    <span class="file-name" id="facilityBusinessName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">Company registration certificate (PDF, JPG, PNG - Max 5MB)</small>
+                        </div>
+
+                        <div class="file-upload-group">
+                            <label class="file-upload-label">Upload Facility License <span class="required">*</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="facilityLicenseDoc" class="file-upload-input" accept=".pdf,.jpg,.jpeg,.png">
+                                <label for="facilityLicenseDoc" class="file-upload-btn" id="facilityLicenseBtn">
+                                    📄 Choose File
+                                    <span class="file-name" id="facilityLicenseName"></span>
+                                </label>
+                            </div>
+                            <small class="help-text">Provincial DoH or PCNS license (PDF, JPG, PNG - Max 5MB)</small>
+                        </div>
+                    </div>
+
+                    <!-- Common Additional Info -->
+                    <div id="additionalInfoField" class="hidden">
+                        <div class="form-group">
+                            <label>Additional Information (Optional)</label>
+                            <textarea id="additionalInfo" rows="3" placeholder="Any additional qualifications, certifications, or information..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary hidden" id="submitBtn">Complete Registration</button>
+
+                    <div class="success-message" id="successMessage">
+                        <h3>Registration Submitted!</h3>
+                        <p id="successText">Thank you for joining CareStaff. Your registration will be verified within 24-48 hours.</p>
+                        <p style="margin-top: 10px;"><strong>We'll contact you at: <span id="confirmEmail"></span></strong></p>
+                    </div>
+                </form>
+
+                <div class="toggle-link" id="showLogin">
+                    Already have an account? Login here
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between login and registration
+        document.getElementById('showRegister').addEventListener('click', function() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registrationSection').classList.remove('hidden');
+            document.getElementById('headerSubtitle').textContent = 'Create Your Account';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', function() {
+            document.getElementById('registrationSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            document.getElementById('headerSubtitle').textContent = 'Healthcare Professional Portal';
+        });
+
+        // Test credentials for demo purposes
+        const testCredentials = {
+            doctor: {
+                email: 'doctor@carestaff.com',
+                password: 'password123',
+                name: 'Dr. Sarah Williams'
+            },
+            nurse: {
+                email: 'nurse@carestaff.com',
+                password: 'password123',
+                name: 'Nurse John Mbatha'
+            },
+            pharmacist: {
+                email: 'pharmacist@carestaff.com',
+                password: 'password123',
+                name: 'Pharmacist Lisa Chen'
+            },
+            facility: {
+                email: 'facility@carestaff.com',
+                password: 'password123',
+                name: 'Sandton Medical Centre'
+            }
+        };
+
+        // Login functionality
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorMessage = document.getElementById('loginError');
+
+            errorMessage.classList.remove('show');
+
+            if (!email || !password) {
+                errorMessage.textContent = 'Please fill in all fields.';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Logging in...';
+
+            // Check against test credentials - auto-detect user type from email
+            setTimeout(() => {
+                let foundUser = null;
+                let userType = null;
+                
+                // Find matching credentials
+                for (const [type, credentials] of Object.entries(testCredentials)) {
+                    if (email === credentials.email && password === credentials.password) {
+                        foundUser = credentials;
+                        userType = type;
+                        break;
+                    }
+                }
+                
+                if (foundUser) {
+                    // Successful login
+                    errorMessage.style.background = '#d4edda';
+                    errorMessage.style.borderColor = '#27ae60';
+                    errorMessage.style.color = '#155724';
+                    errorMessage.innerHTML = `
+                        <strong>✓ Login Successful!</strong><br>
+                        Welcome back, ${foundUser.name}!<br>
+                        <small>Redirecting to dashboard...</small>
+                    `;
+                    errorMessage.classList.add('show');
+                    
+                    // Redirect to view jobs page with email parameter after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/view-jobs.html?email=' + encodeURIComponent(email);
+                    }, 2000);
+                } else {
+                    // Failed login
+                    errorMessage.textContent = 'User not found or incorrect password. Please check your credentials or register for a new account.';
+                    errorMessage.classList.add('show');
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Login';
+                }
+            }, 1000);
+        });
+
+        // User type selection for registration
+        document.getElementById('userType').addEventListener('change', function() {
+            const userType = this.value;
+            
+            // Hide all field groups
+            document.getElementById('doctorFields').classList.add('hidden');
+            document.getElementById('nurseFields').classList.add('hidden');
+            document.getElementById('pharmacistFields').classList.add('hidden');
+            document.getElementById('facilityFields').classList.add('hidden');
+            document.getElementById('commonFields').classList.add('hidden');
+            document.getElementById('additionalInfoField').classList.add('hidden');
+            document.getElementById('submitBtn').classList.add('hidden');
+
+            if (userType) {
+                document.getElementById('commonFields').classList.remove('hidden');
+                document.getElementById('additionalInfoField').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+
+                // Update name label for facilities
+                const nameLabel = document.getElementById('nameLabel');
+                if (userType === 'facility') {
+                    nameLabel.innerHTML = 'Facility/Business Name <span class="required">*</span>';
+                } else {
+                    nameLabel.innerHTML = 'Full Name <span class="required">*</span>';
+                }
+
+                // Show appropriate field group
+                if (userType === 'doctor') {
+                    document.getElementById('doctorFields').classList.remove('hidden');
+                } else if (userType === 'nurse') {
+                    document.getElementById('nurseFields').classList.remove('hidden');
+                } else if (userType === 'pharmacist') {
+                    document.getElementById('pharmacistFields').classList.remove('hidden');
+                } else if (userType === 'facility') {
+                    document.getElementById('facilityFields').classList.remove('hidden');
+                }
+            }
+        });
+
+        // File upload handlers
+        function setupFileUpload(inputId, btnId, nameId) {
+            const input = document.getElementById(inputId);
+            const btn = document.getElementById(btnId);
+            const nameSpan = document.getElementById(nameId);
+
+            input.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const fileName = this.files[0].name;
+                    const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+                    
+                    nameSpan.textContent = `${fileName} (${fileSize}MB)`;
+                    btn.classList.add('has-file');
+                } else {
+                    nameSpan.textContent = '';
+                    btn.classList.remove('has-file');
+                }
+            });
+        }
+
+        // Setup all file uploads
+        setupFileUpload('doctorCouncilDoc', 'doctorCouncilBtn', 'doctorCouncilName');
+        setupFileUpload('doctorProfilePic', 'doctorProfileBtn', 'doctorProfileName');
+        setupFileUpload('nurseCouncilDoc', 'nurseCouncilBtn', 'nurseCouncilName');
+        setupFileUpload('nurseProfilePic', 'nurseProfileBtn', 'nurseProfileName');
+        setupFileUpload('pharmacistCouncilDoc', 'pharmacistCouncilBtn', 'pharmacistCouncilName');
+        setupFileUpload('pharmacistProfilePic', 'pharmacistProfileBtn', 'pharmacistProfileName');
+        setupFileUpload('facilityBusinessDoc', 'facilityBusinessBtn', 'facilityBusinessName');
+        setupFileUpload('facilityLicenseDoc', 'facilityLicenseBtn', 'facilityLicenseName');
+
+        // Form submission
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMessage = document.getElementById('registerError');
+            const successMessage = document.getElementById('successMessage');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+
+            // Validate passwords match
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match.';
+                errorMessage.classList.add('show');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Complete Registration';
+                return;
+            }
+
+            if (password.length < 8) {
+                errorMessage.textContent = 'Password must be at least 8 characters long.';
+                errorMessage.classList.add('show');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Complete Registration';
+                return;
+            }
+
+            // Collect form data
+            const userType = document.getElementById('userType').value;
+            const formData = new FormData();
+            
+            formData.append('action', 'register');
+            formData.append('userType', userType);
+            formData.append('timestamp', new Date().toISOString());
+            formData.append('fullName', document.getElementById('fullName').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('mobile', document.getElementById('mobile').value);
+            formData.append('password', password);
+            formData.append('additionalInfo', document.getElementById('additionalInfo').value);
+
+            // Add user-type specific fields
+            if (userType === 'doctor') {
+                formData.append('hpcsaNumber', document.getElementById('hpcsaNumber').value);
+                formData.append('specialty', document.getElementById('specialty').value);
+                formData.append('experience', document.getElementById('doctorExperience').value);
+                formData.append('availability', document.getElementById('availability').value);
+                formData.append('regions', document.getElementById('doctorRegions').value);
+                
+                const councilDoc = document.getElementById('doctorCouncilDoc').files[0];
+                const profilePic = document.getElementById('doctorProfilePic').files[0];
+                if (councilDoc) formData.append('councilDoc', councilDoc);
+                if (profilePic) formData.append('profilePic', profilePic);
+                
+            } else if (userType === 'nurse') {
+                formData.append('sancNumber', document.getElementById('sancNumber').value);
+                formData.append('nursingCategory', document.getElementById('nursingCategory').value);
+                formData.append('experience', document.getElementById('nurseExperience').value);
+                formData.append('availability', document.getElementById('nurseAvailability').value);
+                formData.append('regions', document.getElementById('nurseRegions').value);
+                
+                const councilDoc = document.getElementById('nurseCouncilDoc').files[0];
+                const profilePic = document.getElementById('nurseProfilePic').files[0];
+                if (councilDoc) formData.append('councilDoc', councilDoc);
+                if (profilePic) formData.append('profilePic', profilePic);
+                
+            } else if (userType === 'pharmacist') {
+                formData.append('sapcNumber', document.getElementById('sapcNumber').value);
+                formData.append('pharmacyCategory', document.getElementById('pharmacyCategory').value);
+                formData.append('experience', document.getElementById('pharmacistExperience').value);
+                formData.append('availability', document.getElementById('pharmacistAvailability').value);
+                formData.append('regions', document.getElementById('pharmacistRegions').value);
+                
+                const councilDoc = document.getElementById('pharmacistCouncilDoc').files[0];
+                const profilePic = document.getElementById('pharmacistProfilePic').files[0];
+                if (councilDoc) formData.append('councilDoc', councilDoc);
+                if (profilePic) formData.append('profilePic', profilePic);
+                
+            } else if (userType === 'facility') {
+                formData.append('facilityType', document.getElementById('facilityType').value);
+                formData.append('businessReg', document.getElementById('businessReg').value);
+                formData.append('facilityLicense', document.getElementById('facilityLicense').value);
+                formData.append('facilityAddress', document.getElementById('facilityAddress').value);
+                formData.append('facilityProvince', document.getElementById('facilityProvince').value);
+                formData.append('facilitySize', document.getElementById('facilitySize').value);
+                formData.append('contactPerson', document.getElementById('contactPerson').value);
+                formData.append('contactPosition', document.getElementById('contactPosition').value);
+                
+                const businessDoc = document.getElementById('facilityBusinessDoc').files[0];
+                const licenseDoc = document.getElementById('facilityLicenseDoc').files[0];
+                if (businessDoc) formData.append('businessDoc', businessDoc);
+                if (licenseDoc) formData.append('licenseDoc', licenseDoc);
+            }
+
+            // Simulate successful submission (replace with actual API call)
+            setTimeout(() => {
+                document.getElementById('confirmEmail').textContent = document.getElementById('email').value;
+                document.getElementById('successText').textContent = 
+                    userType === 'facility' 
+                        ? 'Thank you for registering your facility. Your registration will be verified within 24-48 hours.'
+                        : 'Thank you for joining CareStaff. Your registration will be verified within 24-48 hours.';
+                successMessage.classList.add('show');
+                
+                // Reset form after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('registrationForm').reset();
+                    successMessage.classList.remove('show');
+                    document.getElementById('doctorFields').classList.add('hidden');
+                    document.getElementById('nurseFields').classList.add('hidden');
+                    document.getElementById('pharmacistFields').classList.add('hidden');
+                    document.getElementById('facilityFields').classList.add('hidden');
+                    document.getElementById('commonFields').classList.add('hidden');
+                    document.getElementById('additionalInfoField').classList.add('hidden');
+                    document.getElementById('submitBtn').classList.add('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Complete Registration';
+                }, 5000);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
