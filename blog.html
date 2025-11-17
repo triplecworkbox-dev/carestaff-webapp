@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - CareStaff | Insights for Healthcare Professionals</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        /* Blog Hero */
+        .blog-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 150px 2rem 80px;
+            text-align: center;
+        }
+
+        .blog-hero h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .blog-hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Blog Container */
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 2rem;
+        }
+
+        /* Featured Post */
+        .featured-post {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .featured-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .featured-content {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .post-category {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .featured-content h2 {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .featured-content p {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .read-more {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .read-more:hover {
+            gap: 1rem;
+            transition: gap 0.3s ease;
+        }
+
+        /* Blog Grid */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .blog-card-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .blog-card-content {
+            padding: 2rem;
+        }
+
+        .blog-card-content h3 {
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-card-content .post-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .blog-card-content p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Categories */
+        .categories-section {
+            background: var(--light);
+            padding: 60px 2rem;
+            margin: 60px 0;
+        }
+
+        .categories-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-card h3 {
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 2rem 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section a {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .featured-post {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🏥</span>
+                CareStaff
+            </a>
+            <nav class="nav-menu">
+                <a href="/#how-it-works">How It Works</a>
+                <a href="/#benefits">Benefits</a>
+                <a href="/#testimonials">Doctors</a>
+                <a href="/job-board">Browse Jobs</a>
+                <a href="/blog">Blog</a>
+                <a href="/register" class="btn btn-primary">Join Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Blog Hero -->
+    <section class="blog-hero">
+        <h1>CareStaff Insights</h1>
+        <p>Expert advice, industry trends, and success stories from South Africa's leading locum platform</p>
+    </section>
+
+    <!-- Featured Post -->
+    <div class="blog-container">
+        <article class="featured-post">
+            <div class="featured-image">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="featured-content">
+                <span class="post-category">Company News</span>
+                <div class="post-date">
+                    <i class="far fa-calendar"></i> October 15, 2024
+                </div>
+                <h2>CareStaff Reaches 500+ Active Healthcare Professionals</h2>
+                <p>
+                    We're thrilled to announce that CareStaff has now onboarded over 500 verified healthcare 
+                    professionals across South Africa. This milestone reflects our commitment to transforming 
+                    how medical professionals work and earn. From Cape Town to Johannesburg, doctors are choosing 
+                    flexibility and fair compensation through our platform.
+                </p>
+                <a href="#" class="read-more">
+                    Read Full Story <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </article>
+
+        <!-- Blog Grid -->
+        <div class="blog-grid">
+            <!-- Blog Post 1 -->
+            <article class="blog-card">
+                <div class="blog-card-image">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category">Finance</span>
+                    <h3>Maximizing Your Locum Income: Tips from Top Earners</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> September 28, 2024</span>
+                        <span><i class="far fa-clock"></i> 5 min read</span>
+                    </div>
+                    <p>
+                        Learn from doctors who've earned over R50,000 per month through strategic shift selection 
+                        and building their CareStaff reputation. Discover which shifts offer the best rates and how 
+                        to optimize your schedule.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 2 -->
+            <article class="blog-card">
+                <div class="blog-card-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-heart-pulse"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category" style="background: #f5576c;">Healthcare Trends</span>
+                    <h3>The Rise of Locum Work in South African Healthcare</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> September 12, 2024</span>
+                        <span><i class="far fa-clock"></i> 7 min read</span>
+                    </div>
+                    <p>
+                        Industry analysis shows that 67% of South African doctors are now considering locum work. 
+                        We explore why this shift is happening and what it means for the future of healthcare staffing.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 3 -->
+            <article class="blog-card">
+                <div class="blog-card-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category" style="background: #00b4d8;">Work-Life Balance</span>
+                    <h3>Finding Balance: How Locum Work Supports Your Lifestyle</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> August 30, 2024</span>
+                        <span><i class="far fa-clock"></i> 6 min read</span>
+                    </div>
+                    <p>
+                        Dr. Sarah Naidoo shares how switching to locum work through CareStaff allowed her to pursue 
+                        further studies while maintaining a competitive income. Real stories from real doctors.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 4 -->
+            <article class="blog-card">
+                <div class="blog-card-image" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category" style="background: #fa709a;">Compliance</span>
+                    <h3>CareStaff Achieves POPIA Certification</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> August 15, 2024</span>
+                        <span><i class="far fa-clock"></i> 4 min read</span>
+                    </div>
+                    <p>
+                        We're proud to announce our full compliance with South Africa's Protection of Personal 
+                        Information Act. Learn how we protect your data and maintain the highest security standards.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 5 -->
+            <article class="blog-card">
+                <div class="blog-card-image" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category" style="background: #6dd5ed;">Partnerships</span>
+                    <h3>New Partnership with Leading SA Hospital Groups</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> July 22, 2024</span>
+                        <span><i class="far fa-clock"></i> 5 min read</span>
+                    </div>
+                    <p>
+                        CareStaff announces strategic partnerships with major hospital groups across Gauteng, Western 
+                        Cape, and KwaZulu-Natal, expanding opportunities for our healthcare professionals.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+
+            <!-- Blog Post 6 -->
+            <article class="blog-card">
+                <div class="blog-card-image" style="background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="blog-card-content">
+                    <span class="post-category" style="background: #66a6ff;">Product Updates</span>
+                    <h3>Introducing Our New Mobile App Features</h3>
+                    <div class="post-meta">
+                        <span><i class="far fa-calendar"></i> July 8, 2024</span>
+                        <span><i class="far fa-clock"></i> 4 min read</span>
+                    </div>
+                    <p>
+                        Based on feedback from 300+ doctors, we've launched instant shift notifications, one-tap 
+                        applications, and enhanced payment tracking. See what's new in v2.0.
+                    </p>
+                    <a href="#" class="read-more">
+                        Read More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <section class="categories-section">
+        <div class="categories-container">
+            <h2 style="text-align: center; font-size: 2rem; margin-bottom: 1rem;">Browse by Topic</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                Find articles that matter to you
+            </p>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">💼</div>
+                    <h3>Career Growth</h3>
+                    <p>24 articles</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">💰</div>
+                    <h3>Finance & Earnings</h3>
+                    <p>18 articles</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⚖️</div>
+                    <h3>Work-Life Balance</h3>
+                    <p>15 articles</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🏥</div>
+                    <h3>Healthcare Trends</h3>
+                    <p>21 articles</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📱</div>
+                    <h3>Platform Updates</h3>
+                    <p>12 articles</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">✅</div>
+                    <h3>Success Stories</h3>
+                    <p>19 articles</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>CareStaff</h3>
+                    <p>
+                        South Africa's first tech-enabled locum platform connecting doctors 
+                        with healthcare facilities. Work smarter, not harder.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>For Doctors</h3>
+                    <a href="/register">Sign Up</a>
+                    <a href="/job-board">Browse Shifts</a>
+                    <a href="/doctor-profile">My Profile</a>
+                    <a href="/#how-it-works">How It Works</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <a href="/blog">Blog</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Contact Us</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <a href="#">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CareStaff. Built for South African Healthcare Professionals.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                    🏥 HPCSA Compliant | 🔒 POPIA Certified | 🇿🇦 Proudly South African
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
