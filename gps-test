@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareStaff Admin Dashboard</title>
+    <link rel="stylesheet" href="existing-styles.css"> <!-- Your existing CSS -->
+    <style>
+        /* Minimal additions to your existing styles */
+        .distance-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .location-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Your existing header -->
+    <header class="admin-header">
+        <h1>CareStaff Admin Dashboard</h1>
+        <p>Review and approve job applications</p>
+    </header>
+
+    <div class="container">
+        <!-- Add this location status bar before your applications -->
+        <div class="location-status" id="locationStatus" style="display:none;">
+            <span>📍 Showing jobs near you</span>
+        </div>
+
+        <!-- Your existing stats cards -->
+        <div class="stats-grid">
+            <!-- Your existing stats -->
+        </div>
+
+        <!-- Modified pending applications section -->
+        <div class="pending-applications">
+            <h2>Pending Applications</h2>
+            
+            <div id="applicationsList">
+                <!-- Applications will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // GOOGLE SHEETS API INTEGRATION
+        // ==========================================
+        
+        const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID';
+        const API_KEY = 'YOUR_GOOGLE_API_KEY';
+        const RANGE = 'Sheet1!A:U'; // Adjust to your sheet name and range
+        
+        // User's current location (you can get this from geolocation API)
+        let userLocation = {
+            lat: null,
+            lng: null
+        };
+
+        // Get user's location
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation.lat = position.coords.latitude;
+                        userLocation.lng = position.coords.longitude;
+                        document.getElementById('locationStatus').style.display = 'block';
+                        loadApplications();
+                    },
+                    (error) => {
+                        console.log('Location access denied:', error);
+                        loadApplications(); // Load without distance
+                    }
+                );
+            }
+        }
+
+        // Calculate distance between two coordinates (Haversine formula)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                     Math.sin(dLon/2) * Math.sin(dLon/2);
+            
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c;
+            
+            return distance.toFixed(1); // Return distance in km with 1 decimal
+        }
+
+        // Load applications from Google Sheets
+        async function loadApplications() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.values && data.values.length > 1) {
+                    const headers = data.values[0];
+                    const rows = data.values.slice(1);
+                    
+                    // Find column indices
+                    const latIndex = headers.indexOf('latitude');
+                    const lngIndex = headers.indexOf('longitude');
+                    const facilityIndex = headers.indexOf('Site_Location');
+                    const serviceIndex = headers.indexOf('Service_Type');
+                    const dateIndex = headers.indexOf('Date_Needed');
+                    const startTimeIndex = headers.indexOf('Start_Time');
+                    const endTimeIndex = headers.indexOf('End_Time');
+                    const durationIndex = headers.indexOf('Estimated_Hour');
+                    const costIndex = headers.indexOf('Total_Cost');
+                    const contactIndex = headers.indexOf('Contact_Person');
+                    const phoneIndex = headers.indexOf('Contact_Phone');
+                    const statusIndex = headers.indexOf('Status');
+                    
+                    // Filter pending applications and add distance
+                    const applications = rows
+                        .filter(row => row[statusIndex] === 'Pending')
+                        .map(row => {
+                            const app = {
+                                facility: row[facilityIndex],
+                                service: row[serviceIndex],
+                                date: row[dateIndex],
+                                startTime: row[startTimeIndex],
+                                endTime: row[endTimeIndex],
+                                duration: row[durationIndex],
+                                cost: row[costIndex],
+                                contact: row[contactIndex],
+                                phone: row[phoneIndex],
+                                latitude: parseFloat(row[latIndex]),
+                                longitude: parseFloat(row[lngIndex]),
+                                distance: null
+                            };
+                            
+                            // Calculate distance if both coordinates exist
+                            if (userLocation.lat && userLocation.lng && 
+                                app.latitude && app.longitude) {
+                                app.distance = calculateDistance(
+                                    userLocation.lat,
+                                    userLocation.lng,
+                                    app.latitude,
+                                    app.longitude
+                                );
+                            }
+                            
+                            return app;
+                        })
+                        // Sort by distance if available
+                        .sort((a, b) => {
+                            if (a.distance && b.distance) {
+                                return parseFloat(a.distance) - parseFloat(b.distance);
+                            }
+                            return 0;
+                        });
+                    
+                    renderApplications(applications);
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+            }
+        }
+
+        // Render applications to the page
+        function renderApplications(applications) {
+            const container = document.getElementById('applicationsList');
+            container.innerHTML = '';
+            
+            applications.forEach(app => {
+                const appCard = `
+                    <div class="application-card">
+                        <div class="facility-badge">
+                            ${app.facility}
+                            ${app.distance ? `<span class="distance-badge">
+                                <svg class="location-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                </svg>
+                                ${app.distance} km away
+                            </span>` : ''}
+                        </div>
+                        
+                        <div class="application-details">
+                            <div class="detail-row">
+                                <span class="label">Service:</span>
+                                <span class="value">${app.service}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Date:</span>
+                                <span class="value">${app.date}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Time:</span>
+                                <span class="value">${app.startTime} - ${app.endTime}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Duration:</span>
+                                <span class="value">${app.duration} hours</span>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-section">
+                            <span class="label">Total Cost</span>
+                            <span class="cost-value">${app.cost}</span>
+                        </div>
+                        
+                        <div class="contact-section">
+                            <span>Contact: ${app.contact} - ${app.phone}</span>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-approve" onclick="approveApplication('${app.facility}')">
+                                ✓ Approve Application
+                            </button>
+                            <button class="btn-reject" onclick="rejectApplication('${app.facility}')">
+                                ✗ Reject
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += appCard;
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            getUserLocation();
+        });
+
+        // Action handlers
+        function approveApplication(facility) {
+            console.log('Approving application for:', facility);
+            // Add your approval logic here
+        }
+
+        function rejectApplication(facility) {
+            console.log('Rejecting application for:', facility);
+            // Add your rejection logic here
+        }
+    </script>
+</body>
+</html>
