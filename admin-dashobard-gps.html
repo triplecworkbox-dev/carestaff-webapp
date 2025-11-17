@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareStaff Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+        }
+
+        .header {
+            background: linear-gradient(to right, #475569, #64748b, #475569);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .location-banner {
+            margin-bottom: 1.5rem;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .location-banner.enabled {
+            background: linear-gradient(to right, #10b981, #14b8a6);
+            color: white;
+        }
+
+        .location-banner.disabled {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #334155;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .location-icon {
+            padding: 0.625rem;
+            border-radius: 0.5rem;
+        }
+
+        .location-banner.enabled .location-icon {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .location-banner.disabled .location-icon {
+            background: #f1f5f9;
+        }
+
+        .location-btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location-banner.enabled .location-btn {
+            background: white;
+            color: #0d9488;
+        }
+
+        .location-banner.disabled .location-btn {
+            background: #1e293b;
+            color: white;
+        }
+
+        .location-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .applications-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+        }
+
+        .applications-container h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .application-card {
+            border-left: 4px solid #fbbf24;
+            background: #fffbeb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .application-card:hover {
+            background: #fef3c7;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .application-card.expanded {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .application-card.approved {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .application-card.rejected {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .app-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .app-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .app-top {
+            display: flex;
+            align-items: start;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .facility-badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .distance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #0d9488;
+            font-weight: 600;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .chevron {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #94a3b8;
+            transition: transform 0.3s;
+        }
+
+        .chevron.rotated {
+            transform: rotate(90deg);
+        }
+
+        .app-info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .app-info-item {
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .app-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #cbd5e1;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            color: #475569;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-approve {
+            background: #14b8a6;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #0d9488;
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+        }
+
+        .demo-info {
+            margin-top: 1.5rem;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .demo-info h3 {
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-info ul {
+            color: #1e40af;
+            font-size: 0.875rem;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .demo-info li {
+            margin-bottom: 0.25rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-badge.approved {
+            color: #059669;
+        }
+
+        .status-badge.rejected {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>CareStaff Admin Dashboard</h1>
+            <p>Review and approve job applications</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Location Banner -->
+        <div id="locationBanner" class="location-banner disabled">
+            <div class="location-info">
+                <div class="location-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <div>
+                    <h3 id="locationTitle" style="font-size: 1.125rem; font-weight: 600;">Jobs Near You</h3>
+                    <p id="locationSubtitle" style="font-size: 0.875rem;">Enable location to find nearby opportunities</p>
+                </div>
+            </div>
+            <button id="locationBtn" class="location-btn" onclick="toggleLocation()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                </svg>
+                <span id="locationBtnText">Enable Location</span>
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" style="color: #475569;">9</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #f59e0b;" id="pendingCount">4</div>
+                <div class="stat-label">Pending Review</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" style="color: #14b8a6;">6</div>
+                <div class="stat-label">Registered Doctors</div>
+            </div>
+        </div>
+
+        <!-- Applications -->
+        <div class="applications-container">
+            <h2>Pending Applications</h2>
+            <div id="applicationsList"></div>
+        </div>
+
+        <!-- Demo Info -->
+        <div class="demo-info">
+            <h3>💡 Interactive Demo Features:</h3>
+            <ul>
+                <li>• Click "Enable Location" to sort jobs by distance (nearest first)</li>
+                <li>• Click any job card to expand and see full details</li>
+                <li>• Click Approve or Reject buttons to see the action (card will disappear)</li>
+                <li>• Logos load from your actual GitHub repo</li>
+                <li>• Distance badges appear when location is enabled</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let locationEnabled = false;
+        let selectedAppId = null;
+
+        // Sample data
+        const applications = [
+            {
+                id: 1,
+                facility: "Motherwell Pharmacy",
+                logo: "https://raw.githubusercontent.com/triplecworkbox-dev/carestaff-webapp/main/delmed_logo.jpg",
+                service: "General Practitioner",
+                dateFormatted: "Thu, 23 Oct 2025",
+                startTime: "10:00",
+                endTime: "18:00",
+                duration: "8.0",
+                cost: "R 4800",
+                contact: "Dr Yusra Khan",
+                phone: "+27 71 108 3773",
+                distance: 2.3,
+                status: "Pending"
+            },
+            {
+                id: 2,
+                facility: "Cape Town - Mediclinic Langverwaacht",
+                logo: "https://raw.githubusercontent.com/triplecworkbox-dev/carestaff-webapp/main/chomacare_logo.png",
+                service: "General Practitioner",
+                dateFormatted: "Thu, 30 Oct 2025",
+                startTime: "13:20",
+                endTime: "20:00",
+                duration: "6.7",
+                cost: "R 4000",
+                contact: "DESHIKA",
+                phone: "+27 65 233 4482",
+                distance: 5.7,
+                status: "Pending"
+            },
+            {
+                id: 3,
+                facility: "Johannesburg - Mediclinic Sandton",
+                logo: "https://raw.githubusercontent.com/triplecworkbox-dev/carestaff-webapp/main/ICPA_Logo.png",
+                service: "General Practitioner",
+                dateFormatted: "Thu, 30 Oct 2025",
+                startTime: "08:00",
+                endTime: "17:00",
+                duration: "8.0",
+                cost: "R 4400",
+                contact: "Anke Janneker",
+                phone: "+27 65 223 4162",
+                distance: 12.4,
+                status: "Pending"
+            },
+            {
+                id: 4,
+                facility: "Authentic Aesthetics",
+                logo: "https://raw.githubusercontent.com/triplecworkbox-dev/carestaff-webapp/main/elitify_logo.png",
+                service: "General Practitioner",
+                dateFormatted: "Sat, 01 Nov 2025",
+                startTime: "10:00",
+                endTime: "14:00",
+                duration: "4.0",
+                cost: "R 3200",
+                contact: "Dr Yusra Khan",
+                phone: "+27 93 056 0441",
+                distance: 1.8,
+                status: "Pending"
+            }
+        ];
+
+        function toggleLocation() {
+            locationEnabled = !locationEnabled;
+            const banner = document.getElementById('locationBanner');
+            const btnText = document.getElementById('locationBtnText');
+            const subtitle = document.getElementById('locationSubtitle');
+
+            if (locationEnabled) {
+                banner.classList.remove('disabled');
+                banner.classList.add('enabled');
+                btnText.textContent = 'Location Active';
+                const pendingCount = applications.filter(a => a.status === 'Pending').length;
+                subtitle.textContent = `${pendingCount} opportunities sorted by distance`;
+            } else {
+                banner.classList.remove('enabled');
+                banner.classList.add('disabled');
+                btnText.textContent = 'Enable Location';
+                subtitle.textContent = 'Enable location to find nearby opportunities';
+            }
+
+            renderApplications();
+        }
+
+        function toggleCard(id) {
+            selectedAppId = selectedAppId === id ? null : id;
+            renderApplications();
+        }
+
+        function handleApprove(id) {
+            const app = applications.find(a => a.id === id);
+            app.status = 'Approved';
+            renderApplications();
+            
+            setTimeout(() => {
+                const index = applications.findIndex(a => a.id === id);
+                applications.splice(index, 1);
+                updatePendingCount();
+                renderApplications();
+            }, 1000);
+        }
+
+        function handleReject(id) {
+            const app = applications.find(a => a.id === id);
+            app.status = 'Rejected';
+            renderApplications();
+            
+            setTimeout(() => {
+                const index = applications.findIndex(a => a.id === id);
+                applications.splice(index, 1);
+                updatePendingCount();
+                renderApplications();
+            }, 1000);
+        }
+
+        function updatePendingCount() {
+            const pendingCount = applications.filter(a => a.status === 'Pending').length;
+            document.getElementById('pendingCount').textContent = pendingCount;
+        }
+
+        function renderApplications() {
+            const sortedApps = [...applications].sort((a, b) => {
+                if (locationEnabled) {
+                    return a.distance - b.distance;
+                }
+                return 0;
+            });
+
+            const html = sortedApps.map(app => {
+                const isExpanded = selectedAppId === app.id;
+                const statusClass = app.status === 'Approved' ? 'approved' : app.status === 'Rejected' ? 'rejected' : '';
+                
+                return `
+                    <div class="application-card ${isExpanded ? 'expanded' : ''} ${statusClass}" onclick="toggleCard(${app.id})">
+                        <div class="app-header">
+                            <img src="${app.logo}" alt="${app.facility}" class="app-logo" 
+                                 onerror="this.src='https://raw.githubusercontent.com/triplecworkbox-dev/carestaff-webapp/main/delmed_logo.jpg'">
+                            <div class="app-content">
+                                <div class="app-top">
+                                    <div>
+                                        <span class="facility-badge">${app.facility}</span>
+                                        ${locationEnabled ? `
+                                            <span class="distance-badge">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                                </svg>
+                                                ${app.distance} km away
+                                            </span>
+                                        ` : ''}
+                                        ${app.status !== 'Pending' ? `
+                                            <span class="status-badge ${app.status.toLowerCase()}">${app.status}!</span>
+                                        ` : ''}
+                                        <div style="font-size: 0.875rem; color: #475569; font-weight: 500; margin-top: 0.25rem;">
+                                            ${app.service}
+                                        </div>
+                                    </div>
+                                    <svg class="chevron ${isExpanded ? 'rotated' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </div>
+
+                                <div class="app-info-grid">
+                                    <div class="app-info-item">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                        </svg>
+                                        ${app.dateFormatted}
+                                    </div>
+                                    <div class="app-info-item">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        ${app.startTime} - ${app.endTime}
+                                    </div>
+                                    <div style="color: #475569; font-weight: 600;">
+                                        ${app.duration}h
+                                    </div>
+                                    <div style="color: #1e293b; font-weight: bold;">
+                                        ${app.cost}
+                                    </div>
+                                </div>
+
+                                ${isExpanded ? `
+                                    <div class="app-details">
+                                        <div class="contact-info">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                            </svg>
+                                            <span><strong>${app.contact}</strong> - ${app.phone}</span>
+                                        </div>
+                                        ${app.status === 'Pending' ? `
+                                            <div class="action-buttons">
+                                                <button class="btn btn-approve" onclick="event.stopPropagation(); handleApprove(${app.id})">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                                    </svg>
+                                                    Approve Application
+                                                </button>
+                                                <button class="btn btn-reject" onclick="event.stopPropagation(); handleReject(${app.id})">
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('applicationsList').innerHTML = html;
+        }
+
+        // Initial render
+        renderApplications();
+    </script>
+</body>
+</html>
