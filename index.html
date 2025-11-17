@@ -451,7 +451,62 @@
             font-size: 0.9rem;
             color: #64748b;
         }
+/* Partners Section */
+        .partners {
+            padding: 80px 2rem;
+            background: var(--light);
+        }
 
+        .partners-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .partner-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+            min-height: 150px;
+        }
+
+        .partner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .partner-logo {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .partner-logo img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .partner-card:hover .partner-logo img {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
         /* CTA Section */
         .cta-section {
             padding: 80px 2rem;
@@ -906,6 +961,50 @@
         </div>
     </section>
 
+        <!-- Partners -->
+    <section class="partners" id="partners">
+        <div class="partners-container">
+            <div class="section-header">
+                <h2 class="section-title">Hear From SA Doctors Like You</h2>
+                <p class="section-subtitle">
+                    Here are some of our amazing partners
+                </p>
+            </div>
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner1.png" alt="Partner 1">
+                    </div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner2.png" alt="Partner 2">
+                    </div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner3.png" alt="Partner 3">
+                    </div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner4.png" alt="Partner 4">
+                    </div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner5.png" alt="Partner 5">
+                    </div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="partner6.png" alt="Partner 6">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="cta-container">
